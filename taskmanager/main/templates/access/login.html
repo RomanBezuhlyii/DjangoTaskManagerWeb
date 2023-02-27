@@ -5,12 +5,14 @@
 {% endblock %}
 
 {% block content %}
-    <h1>Створити новий таск</h1>
+<body class="text-center">
+    <h1>Заходьте, будь ласка</h1>
     <form method="post">
         {% csrf_token %}
         {{ form.username }}<br>
         {{ form.password }}<br>
-        <button type="submit" class="btn btn-success">Увійти</button>
-        <span>{{ error }}</span>
+        <button type="submit" class="btn btn-success w-25">Увійти</button>
     </form>
+        <span>{{ error }}</span>
+</body>
 {% endblock %}

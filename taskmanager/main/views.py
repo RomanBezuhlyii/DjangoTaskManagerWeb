@@ -12,7 +12,8 @@ def index(request):
     #tasks = Task.objects.all()
     #Срез количества необходимых записей
     #tasks = Task.object.order_by('id')[:5]
-    tasks = Task.objects.order_by('id')
+    #tasks = Task.objects.order_by('id')
+    tasks = Task.objects.filter(user=request.user.id)
     context = {
         'title': 'Головна сторінка',
         'tasks': tasks,
@@ -20,9 +21,11 @@ def index(request):
     }
     return render(request, 'main/index.html', context)
 
+@login_required
 def about(request):
     return render(request, 'main/about.html')
 
+@login_required
 def add_task(request):
     error = ''
     if request.method == 'POST':

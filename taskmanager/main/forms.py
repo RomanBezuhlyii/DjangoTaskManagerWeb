@@ -19,8 +19,8 @@ class TaskForm(ModelForm):
         }
 
 class LoginForm(forms.Form):
-    username= CharField(max_length= 25,label="Логін", widget=TextInput(attrs={'class':'form-control','placeholder':'Логін'}))
-    password= CharField(max_length= 30, label='Пароль', widget=PasswordInput(attrs={'class':'form-control','placeholder':'Пароль'}))
+    username= CharField(max_length= 25,label="Логін", widget=TextInput(attrs={'class':'form-control w-25 mx-auto','placeholder':'Логін','id':'floatingInput'}))
+    password= CharField(max_length= 30, label='Пароль', widget=PasswordInput(attrs={'class':'form-control w-25 mx-auto','placeholder':'Пароль','id':'floatingPassword'}))
 
 '''class LoginForm(ModelForm):
     class Meta:
