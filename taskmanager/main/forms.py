@@ -1,5 +1,6 @@
 from .models import Task
-from django.forms import ModelForm, TextInput, Textarea
+from django.contrib.auth.models import User
+from django.forms import forms, ModelForm, TextInput, Textarea, CharField, PasswordInput
 
 
 class TaskForm(ModelForm):
@@ -16,3 +17,22 @@ class TaskForm(ModelForm):
                 'placeholder': 'Введіть опис'
             })
         }
+
+class LoginForm(forms.Form):
+    username= CharField(max_length= 25,label="Логін", widget=TextInput(attrs={'class':'form-control','placeholder':'Логін'}))
+    password= CharField(max_length= 30, label='Пароль', widget=PasswordInput(attrs={'class':'form-control','placeholder':'Пароль'}))
+
+'''class LoginForm(ModelForm):
+    class Meta:
+        model = User
+        fields = ['username', 'password']
+        widgets = {
+            "username": TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Введіть логін'
+            }),
+            'password': PasswordInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Введіть пароль'
+            })
+        }'''

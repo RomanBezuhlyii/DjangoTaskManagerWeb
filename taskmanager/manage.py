@@ -2,6 +2,7 @@
 """Django's command-line utility for administrative tasks."""
 import os
 import sys
+import logging
 
 
 def main():
@@ -19,4 +20,5 @@ def main():
 
 
 if __name__ == '__main__':
+    logging.basicConfig(level=logging.INFO, filename="py_log.log", filemode="w")
     main()
