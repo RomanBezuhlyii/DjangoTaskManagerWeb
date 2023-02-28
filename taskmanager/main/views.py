@@ -1,6 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
-from .models import Task
+from .models import Task, TaskList
 from .forms import TaskForm, LoginForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
@@ -15,17 +15,23 @@ def index(request):
     #tasks = Task.objects.order_by('id')
     if request.method == 'POST':
         if request.POST.get('success'):
-            return redirect('about')
+            delete_task(request,int(request.POST.get('success')))
+            return redirect('home')
         elif request.POST.get('edit'):
             request.session['task_id'] = int(request.POST.get('edit'))
             return redirect('edit_task')
-    tasks = Task.objects.filter(user=request.user.id)
+    #tasks = Task.objects.filter(user=request.user.id)
+    tasks = Task.objects.filter(tasklist__user = request.user.id, tasklist__name = 'Програмування')
     context = {
         'title': 'Головна сторінка',
         'tasks': tasks,
         'user': request.user
     }
     return render(request, 'main/index.html', context)
+
+def delete_task(request, task_id):
+    Task.objects.get(id=task_id).delete()
+    return redirect('home')
 
 @login_required
 def about(request):
@@ -56,6 +62,7 @@ def edit_task(request):
     if request.method == 'POST':
         form = TaskForm(request.POST)
         if form.is_valid():
+            task.user = request.user
             task.title = form.cleaned_data.get('title')
             task.task = form.cleaned_data.get('task')
             task.save()
