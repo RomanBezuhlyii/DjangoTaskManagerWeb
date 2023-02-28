@@ -1,16 +1,16 @@
 {% extends 'main/base.html' %}
 
 {% block title %}
-{{ page_title }}
+Редагувати
 {% endblock %}
 
 {% block content %}
-    <h1>{{ page_title }}</h1>
+    <h1>Створити новий таск</h1>
     <form method="post">
         {% csrf_token %}
         {{ form.title }}<br>
         {{ form.task }}<br>
-        <button type="submit" class="btn btn-success">Підтвердити</button>
+        <button type="submit" class="btn btn-success">Додати</button>
         <span>{{ error }}</span>
     </form>
 {% endblock %}

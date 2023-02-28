@@ -13,6 +13,12 @@ def index(request):
     #Срез количества необходимых записей
     #tasks = Task.object.order_by('id')[:5]
     #tasks = Task.objects.order_by('id')
+    if request.method == 'POST':
+        if request.POST.get('success'):
+            return redirect('about')
+        elif request.POST.get('edit'):
+            request.session['task_id'] = int(request.POST.get('edit'))
+            return redirect('edit_task')
     tasks = Task.objects.filter(user=request.user.id)
     context = {
         'title': 'Головна сторінка',
@@ -31,15 +37,42 @@ def add_task(request):
     if request.method == 'POST':
         form = TaskForm(request.POST)
         if form.is_valid():
-            form.save()
+            task = form.save(commit=False)
+            task.user = request.user
+            task.save()
+            print(1)
             return redirect('home')
         else:
             error = 'Form don`t valid'
     form = TaskForm()
     new_task = {
-        'form': form
+        'form': form,
+        'page_title': 'Додати завдання'
     }
     return render(request, 'main/add_task.html', new_task)
+
+def edit_task(request):
+    task = Task.objects.get(id=request.session['task_id'])
+    if request.method == 'POST':
+        form = TaskForm(request.POST)
+        if form.is_valid():
+            task.title = form.cleaned_data.get('title')
+            task.task = form.cleaned_data.get('task')
+            task.save()
+            return redirect('home')
+        else:
+            error = 'Form don`t valid'
+    #task = Task.objects.get(id=request.session['task_id'])
+    initial_dict = {
+        'title': task.title,
+        'task': task.task
+    }
+    form = TaskForm(initial=initial_dict)
+    tasks = {
+        'form': form,
+        'page_title': 'Редагувати завдання'
+    }
+    return render(request, 'main/add_task.html', tasks)
 
 def login_user(request):
     username = ''
@@ -56,12 +89,13 @@ def login_user(request):
             else:
                 context = {'form': form,
                            'error': 'Login or username is incorrect'}
-                return render(request, 'access/login.html', context)
+                return render(request, 'main/login.html', context)
     else:
         form = LoginForm()
     context = {'form': form}
-    return render(request, 'access/login.html', context)
+    return render(request, 'main/login.html', context)
 
 def logout_user(request):
     logout(request)
     return redirect('login_user')
+
