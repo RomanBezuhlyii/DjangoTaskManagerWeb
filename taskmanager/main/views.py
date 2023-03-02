@@ -13,6 +13,20 @@ def index(request):
     #Срез количества необходимых записей
     #tasks = Task.object.order_by('id')[:5]
     #tasks = Task.objects.order_by('id')
+
+    #tasks = Task.objects.filter(user=request.user.id)
+
+    tasklists = TaskList.objects.filter(user = request.user.id)
+    context = {
+        'title': 'Список листів задач',
+        'tasks': tasklists,
+        'user': request.user,
+        'mode': 'tasklist'
+    }
+
+    return render(request, 'main/index.html', context)
+
+def view_tasks(request):
     if request.method == 'POST':
         if request.POST.get('success'):
             delete_task(request,int(request.POST.get('success')))
@@ -20,14 +34,14 @@ def index(request):
         elif request.POST.get('edit'):
             request.session['task_id'] = int(request.POST.get('edit'))
             return redirect('edit_task')
-    #tasks = Task.objects.filter(user=request.user.id)
-    tasks = Task.objects.filter(tasklist__user = request.user.id, tasklist__name = 'Програмування')
+    tasks = Task.objects.filter(tasklist__user=request.user.id, tasklist__name='Програмування')
     context = {
-        'title': 'Головна сторінка',
+        'title': 'Задачі списку {tasklist.name}',
         'tasks': tasks,
-        'user': request.user
+        'user': request.user,
+        'mode': 'task'
     }
-    return render(request, 'main/index.html', context)
+    return render(request,'main/index.html')
 
 def delete_task(request, task_id):
     Task.objects.get(id=task_id).delete()
