@@ -12,10 +12,6 @@
     {% if tasks %}
         {% if mode == 'task' %}
             <div class="container">
-                <form method="post">
-                    {% csrf_token %}
-                    <button class="btn btn-success" id="add_new" value="{{elem.tasklist}}" name="add_new">Додати нове завдання в цей ліст</button>
-                </form>
                 {% for elem in tasks %}
                     <div class="alert alert-warning mt-2">
                         <h3>{{elem.title}}</h3>
@@ -43,10 +39,6 @@
         {% endif %}
     {% else %}
         <div class="container">
-            <form method="post">
-                {% csrf_token %}
-                <button class="btn btn-success" id="add_new1" value="{{elem.tasklist}}" name="add_new">Додати нове завдання в цей ліст</button>
-            </form>
             <h3>На сьогодні завдань немає</h3>
         </div>
     {% endif %}

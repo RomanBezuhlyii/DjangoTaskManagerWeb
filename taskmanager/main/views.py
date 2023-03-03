@@ -59,23 +59,20 @@ def about(request):
 @login_required
 def add_task(request):
     error = ''
+    choices = create_choise_list(request.user.id)
     if request.method == 'POST':
-        form = TaskForm(request.POST)
-
+        form = TaskForm(request.POST,tasklist=choices)
         if form.is_valid():
             task = form.save(commit=False)
+            #form.save()
             #task.user = request.user
-            #task.tasklist = request.POST.getlist('category')
+            task.tasklist = TaskList.objects.get(id = int(form.cleaned_data.get('tasklist')))
             task.save()
             print(1)
             return redirect('home')
         else:
             error = 'Form don`t valid'
-    choices = create_choise_list(request.user.id)
-    #TaskForm.Meta.widgets['tasklist'] = ChoiceField(choices=choices)
-    form = TaskForm()
-    up = {'tasklist': ChoiceField(choices=choices)}
-    form.Meta.widgets.update(up)
+    form = TaskForm(tasklist=choices)
     new_task = {
         'form': form,
         'page_title': 'Додати завдання',
@@ -85,12 +82,7 @@ def add_task(request):
 
 def create_choise_list(user_id):
     tasklists = TaskList.objects.filter(user = user_id)
-    #choise_list = ((elem.id, elem.name) for elem in tasklists)
-    choise_list1 = []
-    for elem in tasklists:
-        mini_tuple = (elem.id, elem.name)
-        choise_list1.append(mini_tuple)
-    choise_list = tuple(choise_list1)
+    choise_list = [(elem.id, elem.name) for elem in tasklists]
     return choise_list
 
 def edit_task(request):
