@@ -29,8 +29,9 @@ def index(request):
 def view_tasks(request):
     if request.method == 'POST':
         if request.POST.get('success'):
-            delete_task(request,int(request.POST.get('success')))
-            return redirect(f'/task_in_list?tasklist_id={request.GET["tasklist_id"]}')
+            next_url = f'/task_in_list?tasklist_id={request.GET["tasklist_id"]}'
+            delete_task(next_url,int(request.POST.get('success')))
+            #return redirect(f'/task_in_list?tasklist_id={request.GET["tasklist_id"]}')
         elif request.POST.get('edit'):
             request.session['task_id'] = int(request.POST.get('edit'))
             return redirect('edit_task')
@@ -50,9 +51,9 @@ def view_tasks(request):
     }
     return render(request,'main/index.html', context)
 
-def delete_task(request, task_id):
+def delete_task(next_url, task_id):
     Task.objects.get(id=task_id).delete()
-    return redirect('home')
+    return redirect(next_url)
 
 @login_required
 def about(request):
@@ -142,7 +143,7 @@ def add_tasklist(request):
             tasklist = form.save(commit=False)
             tasklist.user = request.user
             tasklist.save()
-            return redirect('home')
+            return redirect('tasklist_options')
     form = TaskListForm()
     context = {
         'title': 'Новий список задач',
@@ -152,8 +153,43 @@ def add_tasklist(request):
     return render(request, 'main/add_tasklist.html', context)
 
 def tasklist_options(request):
+    tasklists = TaskList.objects.filter(user = request.user.id)
+    if request.method == "POST":
+        if request.POST.get('delete'):
+            delete_tasklist(request.POST.get('delete'))
+        elif request.POST.get('edit'):
+            request.session['tasklist_id'] = int(request.POST.get('edit'))
+            return redirect('edit_tasklist')
+        #elif request.POST.get('add_new'):
+            #request.session['tasklist_id'] = int(request.POST.get('add_new'))
+    context = {
+        'title': 'Керування списками',
+        'user': request.user,
+        'tasklists': tasklists
+    }
+    return render(request, 'main/tasklist_options.html',context)
 
-    return render(request, 'main/tasklist_options.html')
+def edit_tasklist(request):
+    tasklist = TaskList.objects.get(id = request.session['tasklist_id'])
+    if request.method == 'POST':
+        form = TaskListForm(request.POST)
+        if form.is_valid():
+            tasklist.name = form.cleaned_data.get('name')
+            tasklist.save()
+        return redirect('tasklist_options')
+    initial_dict = {
+        'name': tasklist.name
+    }
+    form = TaskListForm(initial=initial_dict)
+    context = {
+        'page_title': 'Редагування списку задач',
+        'form': form
+    }
+    return render(request,'main/add_tasklist.html', context)
+
+def delete_tasklist(tasklist_id):
+    TaskList.objects.get(id=tasklist_id).delete()
+    return redirect('tasklist_options')
 
 def logout_user(request):
     logout(request)

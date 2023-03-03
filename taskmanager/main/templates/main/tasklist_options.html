@@ -1,0 +1,36 @@
+{% extends 'main/base.html' %}
+
+{% block title %}
+{{ title }}
+{% endblock %}
+
+{% block content %}
+    <div class="col-md-5 p-lg-5 mx-auto my-5">
+      <h1 class="display-4 fw-normal">{{title}}</h1>
+      <p class="lead fw-normal">{{ user.username }}</p>
+    </div>
+    <div class="container">
+        <a href="{% url 'add_tasklist' %}" type='button' class="btn btn-outline-dark btn-lg"><i class="bi bi-file-earmark-plus"></i> Створити новий список</a>
+    </div>
+    {% if tasklists %}
+        <div class="container">
+            {% for elem in tasklists %}
+            <ul class="list-group list-group-flush">
+                 <li class="list-group-item">
+                <div class="alert alert-warning mt-2">
+                    <h3>{{elem.name}}</h3>
+                        <form method="post">
+                            {% csrf_token %}
+                            <button class="btn btn-outline-primary" id="edit" value="{{elem.id}}" name="edit"><i class="bi bi-pencil-fill"></i> Редагувати</button>
+                            <button class="btn btn-outline-danger" id="delete" value="{{elem.id}}" name="delete" data-bs-toggle="popover" data-bs-title="Popover title" data-bs-content="Видаляючи список, ви також видалите всі задачі всередені"><i class="bi bi-trash3"></i>Видалити</button>
+                        </form>
+                </div>
+                </li>
+            </ul>
+            {% endfor %}
+    {% else %}
+        <div class="container">
+            <h3>Доступних списків немає</h3>
+        </div>
+    {% endif %}
+{% endblock %}
