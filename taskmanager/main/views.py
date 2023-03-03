@@ -5,6 +5,7 @@ from .forms import TaskForm, LoginForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 import logging
+from django.forms import forms, ModelForm, TextInput, Textarea, CharField, PasswordInput, ChoiceField
 # Create your views here.
 
 @login_required
@@ -30,18 +31,22 @@ def view_tasks(request):
     if request.method == 'POST':
         if request.POST.get('success'):
             delete_task(request,int(request.POST.get('success')))
-            return redirect('home')
+            return redirect(f'/task_in_list?tasklist_id={request.GET["tasklist_id"]}')
         elif request.POST.get('edit'):
             request.session['task_id'] = int(request.POST.get('edit'))
             return redirect('edit_task')
-    tasks = Task.objects.filter(tasklist__user=request.user.id, tasklist__name='Програмування')
+        #elif request.POST.get('add_new'):
+            #request.session['tasklist_id'] = int(request.POST.get('add_new'))
+
+    tasks = Task.objects.filter(tasklist__user=request.user.id, tasklist__id = int(request.GET['tasklist_id']))
+    current_tasklist = TaskList.objects.get(id = int(request.GET['tasklist_id'])).name
     context = {
-        'title': 'Задачі списку {tasklist.name}',
+        'title': f'Задачі списку {current_tasklist}',
         'tasks': tasks,
         'user': request.user,
         'mode': 'task'
     }
-    return render(request,'main/index.html')
+    return render(request,'main/index.html', context)
 
 def delete_task(request, task_id):
     Task.objects.get(id=task_id).delete()
@@ -56,20 +61,37 @@ def add_task(request):
     error = ''
     if request.method == 'POST':
         form = TaskForm(request.POST)
+
         if form.is_valid():
             task = form.save(commit=False)
-            task.user = request.user
+            #task.user = request.user
+            #task.tasklist = request.POST.getlist('category')
             task.save()
             print(1)
             return redirect('home')
         else:
             error = 'Form don`t valid'
+    choices = create_choise_list(request.user.id)
+    #TaskForm.Meta.widgets['tasklist'] = ChoiceField(choices=choices)
     form = TaskForm()
+    up = {'tasklist': ChoiceField(choices=choices)}
+    form.Meta.widgets.update(up)
     new_task = {
         'form': form,
-        'page_title': 'Додати завдання'
+        'page_title': 'Додати завдання',
+        'choices': choices
     }
     return render(request, 'main/add_task.html', new_task)
+
+def create_choise_list(user_id):
+    tasklists = TaskList.objects.filter(user = user_id)
+    #choise_list = ((elem.id, elem.name) for elem in tasklists)
+    choise_list1 = []
+    for elem in tasklists:
+        mini_tuple = (elem.id, elem.name)
+        choise_list1.append(mini_tuple)
+    choise_list = tuple(choise_list1)
+    return choise_list
 
 def edit_task(request):
     task = Task.objects.get(id=request.session['task_id'])

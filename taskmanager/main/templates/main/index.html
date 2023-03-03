@@ -6,12 +6,16 @@
 
 {% block content %}
     <div class="col-md-5 p-lg-5 mx-auto my-5">
-      <h1 class="display-4 fw-normal">Головна сторінка</h1>
+      <h1 class="display-4 fw-normal">{{title}}</h1>
       <p class="lead fw-normal">{{ user.username }}</p>
     </div>
     {% if tasks %}
         {% if mode == 'task' %}
             <div class="container">
+                <form method="post">
+                    {% csrf_token %}
+                    <button class="btn btn-success" id="add_new" value="{{elem.tasklist}}" name="add_new">Додати нове завдання в цей ліст</button>
+                </form>
                 {% for elem in tasks %}
                     <div class="alert alert-warning mt-2">
                         <h3>{{elem.title}}</h3>
@@ -27,9 +31,11 @@
             </div>
         {% elif mode == 'tasklist' %}
             {% for elem in tasks %}
-                <div class="alert alert-warning mt-2">
-                    <h3>{{elem.name}}</h3>
-                </div>
+                <a class="nav-link active" href="{% url 'task_in_list' %}?tasklist_id={{elem.id}}">
+                    <div class="alert alert-warning mt-2">
+                        <h3>{{elem.name}}</h3>
+                    </div>
+                </a>
             {% endfor %}
         {% else %}
             <div class="container">
@@ -37,6 +43,10 @@
         {% endif %}
     {% else %}
         <div class="container">
+            <form method="post">
+                {% csrf_token %}
+                <button class="btn btn-success" id="add_new1" value="{{elem.tasklist}}" name="add_new">Додати нове завдання в цей ліст</button>
+            </form>
             <h3>На сьогодні завдань немає</h3>
         </div>
     {% endif %}

@@ -1,12 +1,13 @@
 from .models import Task
 from django.contrib.auth.models import User
-from django.forms import forms, ModelForm, TextInput, Textarea, CharField, PasswordInput
+from django.forms import forms, ModelForm, TextInput, Textarea, CharField, PasswordInput, ChoiceField
 
 
 class TaskForm(ModelForm):
+
     class Meta:
         model = Task
-        fields = ["title",'task']
+        fields = ["title",'tasklist','task']
         widgets = {
             "title": TextInput(attrs={
                 'class': 'form-control',

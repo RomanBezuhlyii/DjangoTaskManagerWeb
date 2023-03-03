@@ -9,8 +9,10 @@
     <form method="post">
         {% csrf_token %}
         {{ form.title }}<br>
+        {{ form.tasklist }}<br>
         {{ form.task }}<br>
         <button type="submit" class="btn btn-success">Підтвердити</button>
         <span>{{ error }}</span>
     </form>
+    <h3>{{ choices }}</h3>
 {% endblock %}
