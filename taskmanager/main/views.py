@@ -1,7 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from .models import Task, TaskList
-from .forms import TaskForm, LoginForm
+from .forms import TaskForm, LoginForm, TaskListForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 import logging
@@ -129,6 +129,23 @@ def login_user(request):
         form = LoginForm()
     context = {'form': form}
     return render(request, 'main/login.html', context)
+
+def add_tasklist(request):
+
+    if request.method == 'POST':
+        form = TaskListForm(request.POST)
+        if form.is_valid():
+            tasklist = form.save(commit=False)
+            tasklist.user = request.user
+            tasklist.save()
+            redirect('home')
+    form = TaskListForm()
+    context = {
+        'title': 'Новий список задач',
+        'page_title': 'Додати новий спсиок задач',
+        'form': form
+    }
+    return render(request, 'main/add_tasklist.html', context)
 
 def logout_user(request):
     logout(request)

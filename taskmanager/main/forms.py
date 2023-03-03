@@ -1,4 +1,4 @@
-from .models import Task
+from .models import Task, TaskList
 from django.contrib.auth.models import User
 from django.db import models
 from django.forms import forms, ModelForm, TextInput, Textarea, CharField, PasswordInput, ChoiceField, Select
@@ -29,6 +29,18 @@ class TaskForm(ModelForm):
         tasklist = kwargs.pop('tasklist')
         super(TaskForm, self).__init__(*args, **kwargs)
         self.fields['tasklist'].choices = tasklist
+
+class TaskListForm(ModelForm):
+
+    class Meta:
+        model = TaskList
+        fields = ['name']
+        widgets = {
+            "name": TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Введіть назву'
+            })
+        }
 
 
 class LoginForm(forms.Form):
