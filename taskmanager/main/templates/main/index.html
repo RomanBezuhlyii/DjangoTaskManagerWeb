@@ -14,12 +14,13 @@
             <div class="container">
                 {% for elem in tasks %}
                     <div class="alert alert-warning mt-2">
+
                         <h3>{{elem.title}}</h3>
                         <p>{{elem.task}}</p>
                         <form method="post">
                             {% csrf_token %}
-                            <button class="btn btn-success" id="success" value="{{elem.id}}" name="success">Виконано</button>
-                            <button class="btn btn-primary" id="edit" value="{{elem.id}}" name="edit"><i class="bi bi-pencil-fill"></i> Редагувати</button>
+                            <button class="btn btn-outline-success" id="success" value="{{elem.id}}" name="success"><i class="bi bi-check2-square"></i>Виконано</button>
+                            <button class="btn btn-outline-primary" id="edit" value="{{elem.id}}" name="edit"><i class="bi bi-pencil-fill"></i> Редагувати</button>
                         </form>
 
                     </div>

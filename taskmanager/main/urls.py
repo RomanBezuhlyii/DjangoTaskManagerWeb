@@ -10,5 +10,6 @@ urlpatterns = [
     path('logout', views.logout_user, name='logout_user'),
     path('edit_task',views.edit_task, name='edit_task'),
     path('task_in_list', views.view_tasks, name='task_in_list'),
-    path('new_tasklist', views.add_tasklist, name = 'add_tasklist')
+    path('new_tasklist', views.add_tasklist, name = 'add_tasklist'),
+    path('tasklist_option', views.tasklist_options, name = 'tasklist_option')
 ]

@@ -87,6 +87,7 @@ def create_choise_list(user_id):
     choise_list = [(elem.id, elem.name) for elem in tasklists]
     return choise_list
 
+@login_required
 def edit_task(request):
     task = Task.objects.get(id=request.session['task_id'])
     choices = create_choise_list(request.user.id)
@@ -133,15 +134,15 @@ def login_user(request):
     context = {'form': form}
     return render(request, 'main/login.html', context)
 
+@login_required
 def add_tasklist(request):
-
     if request.method == 'POST':
         form = TaskListForm(request.POST)
         if form.is_valid():
             tasklist = form.save(commit=False)
             tasklist.user = request.user
             tasklist.save()
-            redirect('home')
+            return redirect('home')
     form = TaskListForm()
     context = {
         'title': 'Новий список задач',
@@ -149,6 +150,10 @@ def add_tasklist(request):
         'form': form
     }
     return render(request, 'main/add_tasklist.html', context)
+
+def tasklist_options(request):
+
+    return render(request, 'main/tasklist_options.html')
 
 def logout_user(request):
     logout(request)
