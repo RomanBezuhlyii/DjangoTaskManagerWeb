@@ -16,7 +16,6 @@ def index(request):
     #tasks = Task.objects.order_by('id')
 
     #tasks = Task.objects.filter(user=request.user.id)
-
     tasklists = TaskList.objects.filter(user = request.user.id)
     context = {
         'title': 'Список листів задач',
@@ -37,9 +36,12 @@ def view_tasks(request):
             return redirect('edit_task')
         #elif request.POST.get('add_new'):
             #request.session['tasklist_id'] = int(request.POST.get('add_new'))
-
-    tasks = Task.objects.filter(tasklist__user=request.user.id, tasklist__id = int(request.GET['tasklist_id']))
-    current_tasklist = TaskList.objects.get(id = int(request.GET['tasklist_id'])).name
+    if request.GET['tasklist_id'] == 'all':
+        tasks = Task.objects.filter(tasklist__user=request.user.id)
+        current_tasklist = 'Всі задачі'
+    else:
+        tasks = Task.objects.filter(tasklist__user=request.user.id, tasklist__id = int(request.GET['tasklist_id']))
+        current_tasklist = TaskList.objects.get(id = int(request.GET['tasklist_id'])).name
     context = {
         'title': f'Задачі списку {current_tasklist}',
         'tasks': tasks,
@@ -87,10 +89,11 @@ def create_choise_list(user_id):
 
 def edit_task(request):
     task = Task.objects.get(id=request.session['task_id'])
+    choices = create_choise_list(request.user.id)
     if request.method == 'POST':
-        form = TaskForm(request.POST)
+        form = TaskForm(request.POST, tasklist=choices)
         if form.is_valid():
-            task.user = request.user
+            task.tasklist = TaskList.objects.get(id = int(form.cleaned_data.get('tasklist')))
             task.title = form.cleaned_data.get('title')
             task.task = form.cleaned_data.get('task')
             task.save()
@@ -102,7 +105,7 @@ def edit_task(request):
         'title': task.title,
         'task': task.task
     }
-    form = TaskForm(initial=initial_dict)
+    form = TaskForm(initial=initial_dict,tasklist=choices)
     tasks = {
         'form': form,
         'page_title': 'Редагувати завдання'

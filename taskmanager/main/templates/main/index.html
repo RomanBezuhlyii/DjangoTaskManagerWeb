@@ -26,6 +26,11 @@
                 {% endfor %}
             </div>
         {% elif mode == 'tasklist' %}
+            <a class="nav-link active" href="{% url 'task_in_list' %}?tasklist_id=all">
+                <div class="alert alert-success mt-2">
+                    <h3>Всі завдання</h3>
+                </div>
+            </a>
             {% for elem in tasks %}
                 <a class="nav-link active" href="{% url 'task_in_list' %}?tasklist_id={{elem.id}}">
                     <div class="alert alert-warning mt-2">
